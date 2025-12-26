@@ -1,9 +1,10 @@
 
 import Link from "next/link";
 
+// Minor change for commit
 export default function Home() {
-	return (
-		<>
+   return (
+	   <>
 			<nav className="flex justify-between items-center px-8 py-4 bg-transparent w-full absolute top-0 left-0 z-10">
 				<div className="text-white text-2xl font-bold">Community Talks</div>
 				<div className="flex gap-4 bg-[#6b7280]/60 rounded-full px-6 py-2">
