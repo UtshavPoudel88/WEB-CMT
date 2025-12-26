@@ -2,14 +2,18 @@
 
 import RegisterForm from "../_components/RegisterForm";
 
+// Yet another minor change for commit
 export default function Page() {
     return (
-        <div className="space-y-6 w-full">
-            <div className="text-center">
-                <h1 className="text-2xl font-semibold">Create your account</h1>
-                <p className="mt-1 text-sm text-foreground/70">Sign up to get started</p>
-            </div>
-            <RegisterForm />
+        <div
+            className="min-h-screen w-full flex items-center justify-center"
+            style={{
+                backgroundImage: 'url(/images/ho-bg.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+            }}
+        >
+            <h1 className="text-4xl font-bold text-white drop-shadow-lg">Registration Page</h1>
         </div>
     );
 }
