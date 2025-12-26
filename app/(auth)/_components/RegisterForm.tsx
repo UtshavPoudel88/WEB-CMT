@@ -59,7 +59,7 @@ export default function RegisterForm() {
                             type="text"
                             className="h-11 w-full rounded-lg border border-[#e0e7ef] bg-[#f4f6fb] px-4 text-base outline-none focus:border-[#2563eb] focus:bg-white transition"
                             placeholder="xyz"
-                            // Not in schema, so not registered
+                            
                         />
                     </div>
                     <div className="space-y-1">

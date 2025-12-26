@@ -10,87 +10,147 @@ import Image from "next/image";
 import { LoginData, loginSchema } from "../schema";
 
 export default function LoginForm() {
-    const router = useRouter();
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-    } = useForm<LoginData>({
-        resolver: zodResolver(loginSchema),
-        mode: "onSubmit",
+  const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginData>({
+    resolver: zodResolver(loginSchema),
+    mode: "onSubmit",
+  });
+
+  const [pending, startTransition] = useTransition();
+
+  const submit = async (values: LoginData) => {
+    startTransition(async () => {
+      await new Promise((r) => setTimeout(r, 1000));
+      router.push("/dashboard");
     });
-    const [pending, setTransition] = useTransition();
+    console.log(values);
+  };
 
-    const submit = async (values: LoginData) => {
-        setTransition(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            router.push("/dashboard");
-        });
-        console.log("login", values);
-    };
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#232946] via-[#3b4b8a] to-[#eaeaea]">
+      <div className="relative w-full max-w-md">
+        {/* Glow */}
+        <div className="absolute -top-20 -right-20 w-72 h-72 bg-[#2563eb]/20 rounded-full blur-3xl" />
 
-    return (
-        <form onSubmit={handleSubmit(submit)} className="space-y-6 w-full">
-            <div className="text-center mb-2">
-                <Image
-                    src="/images/img1.png"
-                    alt="Logo"
-                    width={80}
-                    height={80}
-                    className="mx-auto mb-2 rounded-full shadow"
-                    priority
-                />
-                <div className="bg-[#2563eb] text-white rounded-xl py-2 text-2xl font-bold mb-4 tracking-wide shadow-md">Login Page</div>
+        <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/40 p-8">
+          <form onSubmit={handleSubmit(submit)} className="space-y-6">
+            <div className="text-center">
+              <Image
+                src="/images/img1.png"
+                alt="Logo"
+                width={80}
+                height={80}
+                className="mx-auto rounded-full shadow-md mb-2"
+                priority
+              />
+              <div className="bg-gradient-to-r from-[#2563eb] to-[#1e40af] text-white rounded-xl py-2 text-2xl font-bold shadow-md">
+                Login Page
+              </div>
             </div>
-            <div className="space-y-1">
-                <label className="text-base font-semibold text-[#232946]" htmlFor="email">Email or Mobile Number</label>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">
+                Email or Mobile Number
+              </label>
+              <input
+                type="text"
+                placeholder="example@example.com"
+                {...register("email")}
+                className="
+                  h-12 w-full rounded-xl
+                  border border-slate-200
+                  bg-white/70
+                  px-4 text-base
+                  shadow-sm
+                  outline-none
+                  transition-all
+                  focus:border-[#2563eb]
+                  focus:ring-2 focus:ring-[#2563eb]/30
+                "
+              />
+              {errors.email && (
+                <p className="text-xs text-red-600 mt-1 animate-pulse">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">
+                Password
+              </label>
+              <div className="relative">
                 <input
-                    id="email"
-                    type="text"
-                    autoComplete="email"
-                    className="h-12 w-full rounded-xl border-none bg-[#f4f6fb] px-4 text-base outline-none focus:ring-2 focus:ring-[#2563eb] text-[#232946] placeholder:text-[#2563eb]"
-                    {...register("email")}
-                    placeholder="example@example.com"
+                  type="password"
+                  placeholder="••••••••"
+                  {...register("password")}
+                  className="
+                    h-12 w-full rounded-xl
+                    border border-slate-200
+                    bg-white/70
+                    px-4 pr-10 text-base
+                    shadow-sm
+                    outline-none
+                    transition-all
+                    focus:border-[#2563eb]
+                    focus:ring-2 focus:ring-[#2563eb]/30
+                  "
                 />
-                {errors.email?.message && (
-                    <p className="text-xs text-red-600 mt-1">{errors.email.message}</p>
-                )}
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#2563eb] cursor-pointer">
+                  👁️
+                </span>
+              </div>
+              {errors.password && (
+                <p className="text-xs text-red-600 mt-1 animate-pulse">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
-            <div className="space-y-1">
-                <label className="text-base font-semibold text-[#232946]" htmlFor="password">Password</label>
-                <div className="relative">
-                    <input
-                        id="password"
-                        type="password"
-                        autoComplete="current-password"
-                        className="h-12 w-full rounded-xl border-none bg-[#f4f6fb] px-4 text-base outline-none focus:ring-2 focus:ring-[#2563eb] text-[#232946] placeholder:text-[#2563eb] pr-10"
-                        {...register("password")}
-                        placeholder="••••••••"
-                    />
-                    {/* Eye icon placeholder for password visibility toggle */}
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#2563eb] cursor-pointer select-none">
-                        <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path stroke="#2563eb" strokeWidth="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3" stroke="#2563eb" strokeWidth="2"/></svg>
-                    </span>
-                </div>
-                {errors.password?.message && (
-                    <p className="text-xs text-red-600 mt-1">{errors.password.message}</p>
-                )}
+
+            {/* Forgot */}
+            <div className="flex justify-end text-xs">
+              <span className="text-[#2563eb] font-semibold hover:underline cursor-pointer transition">
+                Forget Password?
+              </span>
             </div>
-            <div className="flex justify-between items-center text-xs mt-1">
-                <span></span>
-                <span className="text-[#232946] font-semibold cursor-pointer hover:underline transition">Forget Password</span>
-            </div>
+
+            {/* Button */}
             <button
-                type="submit"
-                disabled={isSubmitting || pending}
-                className="h-12 w-full rounded-xl bg-[#2563eb] text-white text-xl font-bold shadow-md hover:bg-[#1746a2] transition disabled:opacity-60"
+              type="submit"
+              disabled={isSubmitting || pending}
+              className="
+                h-12 w-full rounded-xl
+                bg-gradient-to-r from-[#2563eb] to-[#1e40af]
+                text-white text-lg font-bold
+                shadow-lg
+                transition-all duration-200
+                hover:scale-[1.02]
+                hover:shadow-xl
+                active:scale-[0.98]
+                disabled:opacity-60
+              "
             >
-                {isSubmitting || pending ? "Logging in..." : "Log In"}
+              {isSubmitting || pending ? "Logging in..." : "Log In"}
             </button>
-            <div className="mt-1 text-center text-base text-[#232946]">
-                Don&apos;t have an account?{' '}
-                <Link href="/register" className="text-[#2563eb] font-semibold hover:underline transition">Sign Up</Link>
-            </div>
-        </form>
-    );
+
+            <p className="text-center text-sm text-slate-700">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/register"
+                className="text-[#2563eb] font-semibold hover:underline"
+              >
+                Sign Up
+              </Link>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 }
