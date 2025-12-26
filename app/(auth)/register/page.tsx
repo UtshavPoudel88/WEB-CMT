@@ -2,6 +2,7 @@
 
 import RegisterForm from "../_components/RegisterForm";
 
+// Minor change for commit
 export default function Page() {
     return (
         <div
