@@ -2,6 +2,7 @@
 
 import LoginForm from "../_components/LoginForm";
 
+// Another minor change for commit
 export default function Page() {
     return (
         <div
