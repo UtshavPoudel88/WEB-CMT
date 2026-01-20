@@ -1,17 +1,44 @@
 import Image from "next/image";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-    return (
-        <section className="min-h-screen w-full flex items-center justify-center" style={{
-            background: 'url(/images/bg.png) center center / cover no-repeat',
-        }}>
-            <div className="flex flex-col md:flex-row items-center justify-center w-full h-full min-h-screen p-2 md:p-0">
-                {/* Glassmorphism Login Box */}
-                <div className="backdrop-blur-[8px] bg-white/20 border border-white/30 rounded-2xl shadow-2xl flex flex-col justify-center p-6 md:p-10 w-full max-w-md md:min-h-[520px] min-h-[420px]" style={{maxWidth: 420}}>
-                    {children}
-                </div>
-                {/* ...logo removed... */}
-            </div>
-        </section>
-    );
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <main className="relative min-h-screen w-full overflow-hidden">
+      {/* Background */}
+      <Image
+        src="/images/bg.png"
+        alt="background"
+        fill
+        priority
+        className="object-cover"
+      />
+
+      {/* Overlay */}
+      <div className="absolute inset-0" />
+
+      {/* Content */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
+        <section className="w-full max-w-md bg-white/90 dark:bg-black/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/30 p-8">
+  {/* Logo */}
+  <div className="flex justify-center mb-6">
+    <Image
+      src="/images/main_logo_.png"
+      alt="Logo"
+      width={120}
+      height={120}
+      className="rounded-full border-4 border-white shadow-lg"
+      priority
+    />
+  </div>
+
+  {/* Form or children */}
+  {children}
+</section>
+
+      </div>
+    </main>
+  );
 }
