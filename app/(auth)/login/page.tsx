@@ -27,7 +27,12 @@ export default function LoginPage() {
 
     startTransition(async () => {
       const res = await handleLogin(values);
-      res.success ? router.push("/") : setServerError(res.message);
+      if (res.success) {
+        const role = res.data?.role;
+        router.push(role === "admin" ? "/admin/users" : "/");
+      } else {
+        setServerError(res.message);
+      }
     });
   };
 

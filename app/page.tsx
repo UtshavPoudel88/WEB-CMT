@@ -11,7 +11,7 @@ export default function Home() {
 					<Link href="/" className="text-white font-medium px-2 py-1 hover:underline">Home</Link>
 					<Link href="/communities" className="text-white font-medium px-2 py-1 hover:underline">Communities</Link>
 					<Link href="/explore" className="text-white font-medium px-2 py-1 hover:underline">Explore</Link>
-					<Link href="/profile" className="text-white font-medium px-2 py-1 hover:underline">Profile</Link>
+					<Link href="/user/profile" className="text-white font-medium px-2 py-1 hover:underline">Profile</Link>
 				</div>
 				<div className="flex gap-2">
 					<Link href="/login" className="bg-[#23272a] text-white font-semibold px-4 py-2 rounded-lg shadow hover:bg-[#343a40] transition">Log in</Link>
