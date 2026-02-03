@@ -34,6 +34,19 @@ export interface LoginResponse {
     id: string;
     name: string;
     email: string;
+    role?: string;
+  };
+}
+
+export interface CreateUserResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    id: string;
+    name: string;
+    email: string;
+    role?: string;
+    image?: string;
   };
 }
 
@@ -61,6 +74,48 @@ export const loginUser = async (data: LoginFormData): Promise<LoginResponse> => 
     return res.data;
   } catch (err: unknown) {
     let message = "Login failed";
+
+    if (err instanceof AxiosError && err.response) {
+      message = err.response.data?.message || message;
+    } else if (err instanceof Error) {
+      message = err.message;
+    }
+
+    throw new Error(message);
+  }
+};
+
+export const createUser = async (formData: FormData): Promise<CreateUserResponse> => {
+  try {
+    const res = await axiosInstance.post<CreateUserResponse>(API.AUTH.CREATE_USER, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data;
+  } catch (err: unknown) {
+    let message = "Create user failed";
+
+    if (err instanceof AxiosError && err.response) {
+      message = err.response.data?.message || message;
+    } else if (err instanceof Error) {
+      message = err.message;
+    }
+
+    throw new Error(message);
+  }
+};
+
+export const updateUser = async (id: string, formData: FormData): Promise<CreateUserResponse> => {
+  try {
+    const res = await axiosInstance.put<CreateUserResponse>(API.AUTH.UPDATE_USER(id), formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data;
+  } catch (err: unknown) {
+    let message = "Update user failed";
 
     if (err instanceof AxiosError && err.response) {
       message = err.response.data?.message || message;

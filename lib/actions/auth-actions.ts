@@ -34,6 +34,12 @@ export const handleLogin = async (formData: { email: string; password: string })
       path: "/",
     });
 
+    cookieStore.set("accessToken", res.token, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
+
     cookieStore.set("user", JSON.stringify(res.data), {
       httpOnly: false,
       path: "/",
