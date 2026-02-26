@@ -1,37 +1,44 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #eef4ff;
+  --foreground: #0f1b2d;
+  --panel: #ffffff;
+  --panel-soft: #f7f9ff;
+  --brand: #2b6bff;
+  --brand-dark: #1b4dd6;
+  --accent: #18b6a6;
+  --ink-muted: #5f6b80;
+  --stroke: #d7e1f3;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), "Segoe UI", sans-serif;
 }
 
-/* Explicit theme overrides via data attribute */
-[data-theme="light"] {
-  --background: #ffffff;
-  --foreground: #171717;
+.font-display {
+  font-family: var(--font-display), "Georgia", serif;
 }
 
-[data-theme="dark"] {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+.app-bg {
+  background:
+    radial-gradient(800px 500px at 10% 0%, rgba(24, 182, 166, 0.18), transparent),
+    radial-gradient(900px 600px at 90% 10%, rgba(43, 107, 255, 0.2), transparent),
+    linear-gradient(180deg, #eef4ff 0%, #f7f9ff 55%, #eef4ff 100%);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(215, 225, 243, 0.8);
+  box-shadow: 0 24px 60px rgba(14, 30, 64, 0.08);
+  backdrop-filter: blur(16px);
 }

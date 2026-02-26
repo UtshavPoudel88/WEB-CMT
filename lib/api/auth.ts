@@ -18,23 +18,23 @@ export interface LoginFormData {
 // Backend response types
 export interface RegisterResponse {
   success: boolean;
-  message: string;
   data: {
-    id: string;
+    _id: string;
     name: string;
     email: string;
+    createdAt?: string;
   };
 }
 
 export interface LoginResponse {
   success: boolean;
-  message: string;
   token: string;
-  data: {
-    id: string;
+  data?: {
+    _id: string;
     name: string;
     email: string;
-    role?: string;
+    profilePicture?: string;
+    createdAt?: string;
   };
 }
 
@@ -68,10 +68,28 @@ export const registerUser = async (data: RegisterFormData): Promise<RegisterResp
   }
 };
 
-export const loginUser = async (data: LoginFormData): Promise<LoginResponse> => {
+export const loginUser = async (data: LoginFormData): Promise<LoginResponse & { data: { _id: string; name: string; email: string; profilePicture?: string; createdAt?: string } }> => {
   try {
     const res = await axiosInstance.post<LoginResponse>(API.AUTH.LOGIN, data);
-    return res.data;
+    
+    // Backend doesn't return user data in login response, so we need to fetch it
+    // We'll decode the token to get user ID, or fetch current user
+    // For now, we'll return a minimal response and let the context handle fetching
+    if (res.data.token) {
+      // Try to get user info from token or fetch it
+      // Since backend doesn't return user data, we'll need to fetch it separately
+      // For now, return token and let the calling code handle user fetch
+      return {
+        ...res.data,
+        data: {
+          _id: "", // Will be fetched separately
+          name: "",
+          email: data.email,
+        },
+      };
+    }
+    
+    return res.data as any;
   } catch (err: unknown) {
     let message = "Login failed";
 

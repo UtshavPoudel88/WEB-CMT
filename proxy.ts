@@ -28,7 +28,7 @@ export default function proxy(request: NextRequest) {
   if (pathname.startsWith("/admin")) {
     if (!user || user.role !== "admin") {
       const url = request.nextUrl.clone();
-      url.pathname = user ? "/" : "/login";
+      url.pathname = user ? "/" : "/auth/login";
       return NextResponse.redirect(url);
     }
   }
@@ -36,7 +36,7 @@ export default function proxy(request: NextRequest) {
   if (pathname.startsWith("/user")) {
     if (!user) {
       const url = request.nextUrl.clone();
-      url.pathname = "/login";
+      url.pathname = "/auth/login";
       return NextResponse.redirect(url);
     }
   }
