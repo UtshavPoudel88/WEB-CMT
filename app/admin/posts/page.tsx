@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { getAllPosts, deletePost, type Post } from "@/lib/api/posts";
 import { getImageUrl } from "@/lib/api/endpoints";
 import axiosInstance from "@/lib/api/axios";
+import type { AxiosError } from "axios";
 
 interface PostWithDetails {
   _id: string;
@@ -66,7 +67,7 @@ export default function AdminPosts() {
     } catch (err) {
       console.error("Failed to delete post:", err);
       const errorMessage = err instanceof Error 
-        ? (err as any).response?.data?.message || err.message 
+        ? (err as AxiosError<{ message?: string }>).response?.data?.message || err.message 
         : "Failed to delete post. Please try again.";
       setError(errorMessage || "Failed to delete post. Please try again.");
     } finally {
