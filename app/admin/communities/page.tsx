@@ -5,8 +5,16 @@ import axiosInstance from "@/lib/api/axios";
 import { getAllCommunities, createCommunity } from "@/lib/api/communities";
 import { getImageUrl } from "@/lib/api/endpoints";
 
+// Define a type for Community
+type Community = {
+  _id: string;
+  title: string;
+  image?: string;
+  description?: string;
+};
+
 export default function AdminCommunities() {
-  const [communities, setCommunities] = useState<any[]>([]);
+  const [communities, setCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
@@ -18,6 +26,14 @@ export default function AdminCommunities() {
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+
+  // Edit modal state
+  const [editCommunity, setEditCommunity] = useState<Community | null>(null);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    image: "",
+    description: "",
+  });
 
   useEffect(() => {
     loadCommunities();
@@ -73,9 +89,13 @@ export default function AdminCommunities() {
       const fileInput = document.getElementById("image-upload") as HTMLInputElement;
       if (fileInput) fileInput.value = "";
       await loadCommunities();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to create community:", err);
-      setError(err.message || "Failed to create community. Please check the data and try again.");
+      if (err instanceof Error) {
+        setError(err.message || "Failed to create community. Please check the data and try again.");
+      } else {
+        setError("Failed to create community. Please check the data and try again.");
+      }
     } finally {
       setCreating(false);
     }
@@ -91,6 +111,43 @@ export default function AdminCommunities() {
       console.error("Failed to delete community:", err);
       setError("Failed to delete community. Please try again.");
     }
+  };
+
+  // Edit handlers
+  const handleEditCommunity = (community: Community) => {
+    setEditCommunity(community);
+    setEditForm({
+      title: community.title || "",
+      image: community.image || "",
+      description: community.description || "",
+    });
+  };
+
+  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdateCommunity = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editCommunity) return;
+    try {
+      setError(null);
+      await axiosInstance.put(`/community/communities/${editCommunity._id}`, {
+        title: editForm.title,
+        image: editForm.image,
+        description: editForm.description,
+      });
+      setEditCommunity(null);
+      await loadCommunities();
+    } catch (err) {
+      console.error("Failed to update community:", err);
+      setError("Failed to update community. Please try again.");
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setEditCommunity(null);
   };
 
   if (loading) {
@@ -199,6 +256,71 @@ export default function AdminCommunities() {
         </form>
       </div>
 
+      {/* Edit Community Modal */}
+      {editCommunity && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+          <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-md relative">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+              onClick={handleCloseEditModal}
+            >
+              &times;
+            </button>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Edit Community</h2>
+            <form onSubmit={handleUpdateCommunity} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="edit-title">
+                  Title
+                </label>
+                <input
+                  id="edit-title"
+                  name="title"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  type="text"
+                  value={editForm.title}
+                  onChange={handleEditFormChange}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="edit-image">
+                  Image URL
+                </label>
+                <input
+                  id="edit-image"
+                  name="image"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  type="text"
+                  value={editForm.image}
+                  onChange={handleEditFormChange}
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="edit-description">
+                  Description
+                </label>
+                <textarea
+                  id="edit-description"
+                  name="description"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 resize-none"
+                  rows={3}
+                  value={editForm.description}
+                  onChange={handleEditFormChange}
+                  placeholder="Describe this community..."
+                />
+              </div>
+              <button
+                type="submit"
+                className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-700 transition"
+              >
+                Update Community
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Communities Table */}
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">All Communities</h2>
@@ -216,7 +338,7 @@ export default function AdminCommunities() {
                 </tr>
               </thead>
               <tbody>
-                {communities.map((c: any) => (
+                {communities.map((c: Community) => (
                   <tr key={c._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                     <td className="py-3 pr-4 font-medium text-gray-900">{c.title}</td>
                     <td className="py-3 pr-4 hidden md:table-cell text-gray-600 line-clamp-1">
@@ -245,7 +367,14 @@ export default function AdminCommunities() {
                         </div>
                       )}
                     </td>
-                    <td className="py-3 pr-0 text-right">
+                    <td className="py-3 pr-0 text-right space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => handleEditCommunity(c)}
+                        className="inline-flex items-center rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+                      >
+                        Edit
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteCommunity(c._id)}
@@ -264,4 +393,3 @@ export default function AdminCommunities() {
     </div>
   );
 }
-
