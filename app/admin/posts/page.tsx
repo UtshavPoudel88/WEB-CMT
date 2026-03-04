@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { useEffect, useState } from "react";
 import { getAllPosts, deletePost, type Post } from "@/lib/api/posts";
 import { getImageUrl } from "@/lib/api/endpoints";
