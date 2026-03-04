@@ -63,9 +63,12 @@ export default function AdminPosts() {
       setError(null);
       await deletePost(postId);
       await loadPosts(); // Reload posts after deletion
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to delete post:", err);
-      setError(err.response?.data?.message || "Failed to delete post. Please try again.");
+      const errorMessage = err instanceof Error 
+        ? (err as any).response?.data?.message || err.message 
+        : "Failed to delete post. Please try again.";
+      setError(errorMessage || "Failed to delete post. Please try again.");
     } finally {
       setDeleting(null);
     }
