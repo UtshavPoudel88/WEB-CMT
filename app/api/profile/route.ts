@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+
 // Simulated user database
 let users = [
   {
