@@ -1,4 +1,5 @@
 import "./globals.css";
+
 import NavBar from "./components/NavBar";
 import { AuthProvider } from "../lib/context/AuthContext";
 
