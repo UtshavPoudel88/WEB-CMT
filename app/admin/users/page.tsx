@@ -19,6 +19,16 @@ export default function AdminUsers() {
   const [error, setError] = useState<string | null>(null);
   const [promoting, setPromoting] = useState<string | null>(null);
 
+  // Edit modal state
+  const [editUser, setEditUser] = useState<AdminUserRow | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    email: "",
+    profilePicture: "",
+    role: "",
+    password: "", // Add password field
+  });
+
   useEffect(() => {
     loadUsers();
   }, []);
@@ -56,9 +66,21 @@ export default function AdminUsers() {
       setError(null);
       await axiosInstance.put(API.AUTH.UPDATE_USER(id), { role: "admin" });
       await loadUsers();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to promote user:", err);
-      setError(err.response?.data?.message || "Failed to promote user. Please try again.");
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as { response?: { data?: { message?: string } } }).response === "object"
+      ) {
+        setError(
+          ((err as { response?: { data?: { message?: string } } }).response?.data?.message) ||
+            "Failed to promote user. Please try again."
+        );
+      } else {
+        setError("Failed to promote user. Please try again.");
+      }
     } finally {
       setPromoting(null);
     }
@@ -71,12 +93,73 @@ export default function AdminUsers() {
       setError(null);
       await axiosInstance.put(API.AUTH.UPDATE_USER(id), { role: "user" });
       await loadUsers();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to demote user:", err);
-      setError(err.response?.data?.message || "Failed to demote user. Please try again.");
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as { response?: { data?: { message?: string } } }).response === "object"
+      ) {
+        setError(
+          ((err as { response?: { data?: { message?: string } } }).response?.data?.message) ||
+            "Failed to demote user. Please try again."
+        );
+      } else {
+        setError("Failed to demote user. Please try again.");
+      }
     } finally {
       setPromoting(null);
     }
+  };
+
+  // Edit handlers
+  const handleEditUser = (user: AdminUserRow) => {
+    setEditUser(user);
+    setEditForm({
+      name: user.name || "",
+      email: user.email || "",
+      profilePicture: user.profilePicture || "",
+      role: user.role || "",
+      password: "", // Reset password field
+    });
+  };
+
+  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editUser) return;
+    try {
+      setError(null);
+      interface UpdateUserPayload {
+        name: string;
+        email: string;
+        profilePicture: string;
+        role: string;
+        password?: string;
+      }
+      const updateData: UpdateUserPayload = {
+        name: editForm.name,
+        email: editForm.email,
+        profilePicture: editForm.profilePicture,
+        role: editForm.role,
+        ...(editForm.password ? { password: editForm.password } : {}),
+      };
+      await axiosInstance.put(API.AUTH.UPDATE_USER(editUser._id), updateData);
+      setEditUser(null);
+      await loadUsers();
+    } catch (err) {
+      console.error("Failed to update user:", err);
+      setError("Failed to update user. Please try again.");
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setEditUser(null);
   };
 
   if (loading) {
@@ -103,6 +186,100 @@ export default function AdminUsers() {
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
           {error}
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {editUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+          <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-md relative">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+              onClick={handleCloseEditModal}
+            >
+              &times;
+            </button>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Edit User</h2>
+            <form onSubmit={handleUpdateUser} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="edit-name">
+                  Name
+                </label>
+                <input
+                  id="edit-name"
+                  name="name"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  type="text"
+                  value={editForm.name}
+                  onChange={handleEditFormChange}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="edit-email">
+                  Email
+                </label>
+                <input
+                  id="edit-email"
+                  name="email"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  type="email"
+                  value={editForm.email}
+                  onChange={handleEditFormChange}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="edit-profilePicture">
+                  Profile Picture URL
+                </label>
+                <input
+                  id="edit-profilePicture"
+                  name="profilePicture"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  type="text"
+                  value={editForm.profilePicture}
+                  onChange={handleEditFormChange}
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="edit-role">
+                  Role
+                </label>
+                <input
+                  id="edit-role"
+                  name="role"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  type="text"
+                  value={editForm.role}
+                  onChange={handleEditFormChange}
+                  placeholder="user or admin"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="edit-password">
+                  Password
+                </label>
+                <input
+                  id="edit-password"
+                  name="password"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  type="password"
+                  value={editForm.password}
+                  onChange={handleEditFormChange}
+                  placeholder="Leave blank to keep unchanged"
+                  autoComplete="new-password"
+                />
+              </div>
+              <button
+                type="submit"
+                className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-700 transition"
+              >
+                Update User
+              </button>
+            </form>
+          </div>
         </div>
       )}
 
@@ -172,6 +349,13 @@ export default function AdminUsers() {
                       </td>
                       <td className="py-3 pr-0 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleEditUser(user)}
+                            className="inline-flex items-center rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+                          >
+                            Edit
+                          </button>
                           {isAdmin ? (
                             <button
                               type="button"
@@ -211,4 +395,3 @@ export default function AdminUsers() {
     </div>
   );
 }
-
