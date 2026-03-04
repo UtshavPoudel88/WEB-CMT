@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import axiosInstance from "./axios";
 import { API } from "./endpoints";
 
@@ -89,7 +89,15 @@ export const loginUser = async (data: LoginFormData): Promise<LoginResponse & { 
       };
     }
     
-    return res.data as any;
+    // If token is not present, return the response as is with an empty data object
+    return {
+      ...res.data,
+      data: {
+        _id: "",
+        name: "",
+        email: data.email,
+      },
+    };
   } catch (err: unknown) {
     let message = "Login failed";
 
@@ -105,7 +113,7 @@ export const loginUser = async (data: LoginFormData): Promise<LoginResponse & { 
 
 export const createUser = async (formData: FormData): Promise<CreateUserResponse> => {
   try {
-    const res = await axiosInstance.post<CreateUserResponse>(API.AUTH.CREATE_USER, formData, {
+    const res = await axiosInstance.post<CreateUserResponse>(API.AUTH.REGISTER, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
