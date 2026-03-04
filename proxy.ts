@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+
 type UserCookie = {
   id?: string;
   name?: string;
