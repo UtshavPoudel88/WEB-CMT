@@ -1,40 +1,24 @@
-# Sprint 1
+# Community WebView Frontend
 
-### Useful Resources
+## Run locally
 
-- https://tailwindflex.com/
-- https://www.heroui.com/
-- https://ui.shadcn.com/
-
----
-
-Replace my-app with your application name
-
-Go to your working directory and open terminal
-- Create a new nextjs application
 ```bash
-npx create-next-app@latest my-app --yes
+npm install
+npm run dev
 ```
 
-- CD into your my-app
+App starts on `http://localhost:3001`.
+
+## Quality checks
+
 ```bash
-cd my-app
+npm run lint
+npm test
+npm run test:ci
 ```
 
-- Open vscode
-```bash
-code .
-```
+## Notes
 
-- Install the following packages
-```bash
-npm install react-hook-form zod @hookform/resolvers
-```
-
----
-
-### Directory Description
-
-app/(public)/page.tsx
-
-if no page in app folder, it can also be set inside (public) folder treated as "/"root 
+- Jest setup file: `src/__tests__/setupTests.ts`
+- API helpers live in: `lib/api/`
+- App Router pages live in: `app/`
