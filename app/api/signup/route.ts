@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+
 // Demo user store
 const users: { email: string; password: string; name: string; role: string }[] = [
   { email: "admin@example.com", password: "admin123", name: "Admin", role: "admin" },
