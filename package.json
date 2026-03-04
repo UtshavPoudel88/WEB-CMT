@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "jest --verbose",
+    "test:ci": "jest --ci --runInBand --verbose",
     "test:watch": "jest --watch"
   },
   "dependencies": {
