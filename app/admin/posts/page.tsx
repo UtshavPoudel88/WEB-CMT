@@ -115,6 +115,7 @@ export default function AdminPosts() {
         <p className="text-sm text-gray-600 mt-2">
           Manage all posts across all communities. View details and delete posts as needed.
         </p>
+        <p className="text-xs text-gray-500 mt-1">Total posts: {posts.length}</p>
       </div>
 
       {error && (
